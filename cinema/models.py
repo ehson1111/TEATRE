@@ -96,3 +96,28 @@ class Review(models.Model):
     create_at=models.DateField()
     def __str__(self):
         return self.star_number
+    
+class Hall(models.Model):
+    name = models.CharField(max_length=50)
+    
+    def __str__(self):
+        return self.name
+    
+class Show(models.Model):
+    movie = models.ForeignKey(Movie, related_name='movie_releated_on_show', on_delete=models.CASCADE)
+    showing_time = models.CharField(max_length=50)
+    showing_date = models.CharField(max_length=50)
+    hall = models.ForeignKey(Hall, related_name='hall_releated_on_show', on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return self.movie.name + " "+ self.showing_date +" "+self.showing_time
+    
+    
+class SeatPlace(models.Model):
+    name = models.CharField(max_length=50)
+    hall = models.ForeignKey(Hall, related_name='hall_releated_seatplace', on_delete=models.CASCADE)
+    status = models.BooleanField(default=False)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    
+    def __str__(self):
+        return self.hall.name
