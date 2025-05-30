@@ -1,0 +1,41 @@
+{% extends 'theater/base.html' %}
+{% block title %}{{ movie.title }}{% endblock %}
+{% block content %}
+<h1>{{ movie.title }}</h1>
+<img src="{{ movie.poster.url }}" class="img-fluid mb-3" alt="{{ movie.title }}">
+<p>{{ movie.description }}</p>
+
+<h3>Намоишҳо</h3>
+<ul class="list-group">
+    {% for show in shows %}
+        <li class="list-group-item">
+            {{ show.showing_date }} соат {{ show.start_time }}
+            <a href="{% url 'show_detail' show.pk %}" class="btn btn-sm btn-outline-primary float-right">Тафсилот</a>
+        </li>
+    {% endfor %}
+</ul>
+
+<h3>Баррасиҳо</h3>
+{% for review in reviews %}
+    <div class="card mb-2">
+        <div class="card-body">
+            <strong>{{ review.user.username }}</strong> - {{ review.created_at|date:"d M Y" }}
+            <p>{{ review.text }}</p>
+            <small>Рейтинг: {{ review.star_number }}/5</small>
+        </div>
+    </div>
+{% empty %}
+    <p>Баррасиҳо мавҷуд нестанд.</p>
+{% endfor %}
+
+{% if user.is_authenticated %}
+    <h4>Илова кардани барраси</h4>
+    <form method="post" action="{% url 'add_review' movie.pk %}">
+        {% csrf_token %}
+        {{ review_form.as_p }}
+        <button type="submit" class="btn btn-success">Ирсол</button>
+    </form>
+{% else %}
+    <p>Барои илова кардани барраси, лутфан <a href="{% url 'login' %}">вуруд</a> кунед.</p>
+{% endif %}
+{% endblock %}
