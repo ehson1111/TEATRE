@@ -32,9 +32,9 @@ def login_view(request):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect('home')  # Замените 'home' на имя вашего URL
+                return redirect('home') 
     else:
-        form = AuthenticationForm()  # Важно создать форму для GET-запросов
+        form = AuthenticationForm()  
     
     return render(request, 'login.html', {'form': form})
 
@@ -93,3 +93,5 @@ def password_reset_confirm_view(request, uidb64, token):
 
 def password_reset_complete_view(request):
     return render(request, "password_reset_complete.html")
+
+
