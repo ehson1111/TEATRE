@@ -33,7 +33,7 @@ class Movie(models.Model):
     directors = models.ManyToManyField(Directors, through='MovieDirector', related_name='movies')
 
     def __str__(self):
-        return self.title
+        return f"{self.title} "
 
 class MovieActors(models.Model):
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
@@ -127,8 +127,7 @@ class Show(models.Model):
     hall = models.ForeignKey(Hall, related_name='hall_releated_on_show', on_delete=models.CASCADE)
     
     def __str__(self):
-        return self.movie.name + " "+ self.showing_date +" "+self.showing_time
-    
+        return f"{self.movie.title} | {self.showing_date} {self.showing_time} "
     
 class SeatPlace(models.Model):
     name = models.CharField(max_length=50)

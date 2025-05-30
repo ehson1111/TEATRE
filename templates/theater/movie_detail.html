@@ -4,43 +4,178 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ movie.title }}</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #141e30, #243b55);
+            color: #fff;
+            line-height: 1.6;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        h1, h2 {
+            color: #00ffd5;
+            margin-bottom: 10px;
+        }
+
+        img {
+            width: 100%;
+            max-width: 300px;
+            height: auto;
+            border-radius: 8px;
+            display: block;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        p {
+            margin-bottom: 10px;
+        }
+
+        strong {
+            color: #ffdd57;
+        }
+
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+            margin-bottom: 20px;
+        }
+
+        ul li {
+            margin-bottom: 8px;
+        }
+
+        .shows-container {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: rgba(0, 255, 213, 0.1);
+            border-radius: 8px;
+        }
+
+        .show-time {
+            display: inline-block;
+            margin: 10px;
+            padding: 10px 15px;
+            background-color: #243b55;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .show-time:hover {
+            background-color: #00ffd5;
+            color: #141e30;
+            transform: translateY(-2px);
+        }
+
+        .show-time a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .show-time:hover a {
+            color: #141e30;
+        }
+
+        .review-section {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #444;
+        }
+
+        .review {
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .review p {
+            margin: 5px 0;
+        }
+
+        small {
+            color: #aaa;
+            font-style: italic;
+        }
+
+        .no-shows {
+            color: #ff6b6b;
+            font-style: italic;
+        }
+    </style>
 </head>
 <body>
-    <h1>{{ movie.title }}</h1>
-    
-    <img src="{{ movie.image.url }}" alt="{{ movie.title }}" width="300">
-    
-    <p><strong>Description:</strong> {{ movie.description }}</p>
-    <p><strong>Age Limit:</strong> {{ movie.age_limit }}</p>
-    <p><strong>Duration:</strong> {{ movie.duration }} minutes</p>
-    <p><strong>Country:</strong> {{ movie.country }}</p>
-    <p><strong>Release Year:</strong> {{ movie.rel_year }}</p>
-    
-    <h2>Actors</h2>
-    <ul>
-        {% for actor in movie.actors.all %}
-            <li>{{ actor.name }} ({{ actor.experience }} years experience)</li>
-        {% endfor %}
-    </ul>
-    
-    <h2>Directors</h2>
-    <ul>
-        {% for director in movie.directors.all %}
-            <li>{{ director.fullname }}</li>
-        {% endfor %}
-    </ul>
-    
-    <h2>Reviews</h2>
-    {% if reviews %}
-        {% for review in reviews %}
-            <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
-                <p><strong>Rating:</strong> {{ review.star_number }} stars</p>
-                <p>{{ review.descriptions }}</p>
-                <p><small>By: {{ review.user_id.full_name }} on {{ review.create_at }}</small></p>
-            </div>
-        {% endfor %}
-    {% else %}
-        <p>No reviews yet.</p>
-    {% endif %}
+    <div class="container">
+        <h1>{{ movie.title }}</h1>
+
+        <img src="{{ movie.image.url }}" alt="{{ movie.title }}">
+
+        <p><strong>Description:</strong> {{ movie.description }}</p>
+        <p><strong>Age Limit:</strong> {{ movie.age_limit }}</p>
+        <p><strong>Duration:</strong> {{ movie.duration }} minutes</p>
+        <p><strong>Country:</strong> {{ movie.country }}</p>
+        <p><strong>Release Year:</strong> {{ movie.rel_year }}</p>
+
+        <h2>Available Shows</h2>
+        <div class="shows-container">
+            {% if movie.show_set.all %}
+                {% for show in movie.show_set.all %}
+                    <div class="show-time">
+                        <a href="{% url 'book_tickets' show_id=show.id %}">
+                            {{ show.datetime|date:"D, d M Y H:i" }}
+                        </a>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="no-shows">No shows scheduled yet</p>
+            {% endif %}
+        </div>
+
+        <h2>Actors</h2>
+        <ul>
+            {% for actor in movie.actors.all %}
+                <li>{{ actor.name }} ({{ actor.experience }} years experience)</li>
+            {% endfor %}
+        </ul>
+
+        <h2>Directors</h2>
+        <ul>
+            {% for director in movie.directors.all %}
+                <li>{{ director.fullname }}</li>
+            {% endfor %}
+        </ul>
+
+        <div class="review-section">
+            <h2>Reviews</h2>
+            {% if reviews %}
+                {% for review in reviews %}
+                    <div class="review">
+                        <p><strong>Rating:</strong> {{ review.star_number }} stars</p>
+                        <p>{{ review.descriptions }}</p>
+                        <p><small>By: {{ review.user_id.full_name }} on {{ review.create_at }}</small></p>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No reviews yet.</p>
+            {% endif %}
+        </div>
+    </div>
 </body>
 </html>
