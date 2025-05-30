@@ -1,0 +1,210 @@
+<style>
+  :root {
+    --primary: #e50914;       /* Основной красный */
+    --primary-dark: #b81d24;  /* Темно-красный */
+    --dark: #221f1f;          /* Основной темный фон */
+    --darker: #1a1a1a;        /* Еще темнее */
+    --light: #f5f5f1;         /* Светлый текст */
+    --gold: #ffd700;          /* Золотой акцент */
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
+
+  body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background: var(--darker);
+    color: var(--light);
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image: 
+      radial-gradient(circle at 20% 30%, rgba(234, 20, 30, 0.15) 0%, transparent 25%),
+      radial-gradient(circle at 80% 70%, rgba(234, 20, 30, 0.15) 0%, transparent 25%);
+  }
+
+  .register-container {
+    width: 100%;
+    max-width: 480px;
+    padding: 40px;
+    background: rgba(34, 31, 31, 0.95);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255, 215, 0, 0.1);
+  }
+
+  .register-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(to right, var(--primary), var(--gold));
+  }
+
+  h2 {
+    color: var(--gold);
+    text-align: center;
+    font-size: 2.4rem;
+    margin-bottom: 30px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    position: relative;
+    padding-bottom: 15px;
+  }
+
+  h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 3px;
+    background: linear-gradient(to right, var(--primary), var(--gold));
+    border-radius: 3px;
+  }
+
+  form {
+    margin-top: 20px;
+  }
+
+  form p {
+    margin-bottom: 25px;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--light);
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+  }
+
+  input[type="text"],
+  input[type="password"],
+  input[type="email"] {
+    width: 100%;
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    color: var(--light);
+    font-size: 1rem;
+    transition: var(--transition);
+  }
+
+  input[type="text"]:focus,
+  input[type="password"]:focus,
+  input[type="email"]:focus {
+    outline: none;
+    border-color: var(--gold);
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.15);
+  }
+
+  button[type="submit"] {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(to right, var(--primary), var(--primary-dark));
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  button[type="submit"]::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.2),
+      transparent
+    );
+    transition: 0.5s;
+  }
+
+  button[type="submit"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(234, 20, 30, 0.4);
+  }
+
+  button[type="submit"]:hover::before {
+    left: 100%;
+  }
+
+  .login-link {
+    text-align: center;
+    margin-top: 25px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.95rem;
+  }
+
+  .login-link a {
+    color: var(--gold);
+    text-decoration: none;
+    position: relative;
+    padding-bottom: 2px;
+    transition: var(--transition);
+  }
+
+  .login-link a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--gold);
+    transition: var(--transition);
+  }
+
+  .login-link a:hover::after {
+    width: 100%;
+  }
+
+  .login-link a:hover {
+    color: white;
+  }
+
+  /* Анимация мерцания как в кинотеатре */
+  @keyframes flicker {
+    0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+      opacity: 1;
+    }
+    20%, 22%, 24%, 55% {
+      opacity: 0.5;
+    }
+  }
+
+  .register-container {
+    animation: flicker 8s infinite;
+  }
+</style>
+
+<div class="register-container">
+  <h2>Регистратсия</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Сабт кардан</button>
+  </form>
+  <p class="login-link">Аккаунт доред? <a href="{% url 'login' %}">Вуруд</a></p>
+</div>  

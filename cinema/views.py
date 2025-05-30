@@ -37,6 +37,10 @@ def login_view(request):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
+                return redirect('home')  # Замените 'home' на имя вашего URL
+    else:
+        form = AuthenticationForm()  # Важно создать форму для GET-запросов
+    
                 return redirect('home')
     else:
         form = AuthenticationForm()
