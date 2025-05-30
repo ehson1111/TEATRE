@@ -1,0 +1,18 @@
+{% extends 'theater/base.html' %}
+{% block title %}Рӯйхати филмҳо{% endblock %}
+{% block content %}
+<h1>Ҳамаи филмҳо</h1>
+<div class="row">
+    {% for movie in movies %}
+        <div class="col-md-3">
+            <div class="card mb-3">
+                <img src="{{ movie.poster.url }}" class="card-img-top" alt="{{ movie.title }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ movie.title }}</h5>
+                    <a href="{% url 'movie_detail' movie.pk %}" class="btn btn-primary">Тафсилот</a>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'theater/base.html' %}
+{% block title %}Намоиши {{ show.movie.title }}{% endblock %}
+{% block content %}
+<h1>{{ show.movie.title }}</h1>
+<p>Сана: {{ show.showing_date }} | Вақт: {{ show.start_time }}</p>
+<p>Зал: {{ show.hall.name }}</p>
+
+<h3>Ҷойҳои нишаст</h3>
+<form method="post" action="{% url 'book_tickets' show.pk %}">
+    {% csrf_token %}
+    {{ booking_form.as_p }}
+    <button type="submit" class="btn btn-primary">Брон кардан</button>
+</form>
+
+<h4>Ҷойҳои броншуда:</h4>
+<ul>
+    {% for seat in booked_seats %}
+        <li>{{ seat }}</li>
+    {% endfor %}
+</ul>
+{% endblock %}
