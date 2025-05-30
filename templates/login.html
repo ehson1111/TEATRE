@@ -1,0 +1,196 @@
+<style>
+  :root {
+    --primary: #e50914; /* Красный Netflix-like */
+    --secondary: #b81d24;
+    --dark: #221f1f;
+    --light: #f5f5f1;
+    --gold: #ffd700;
+    --shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background: var(--dark);
+    color: var(--light);
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image: 
+      radial-gradient(circle at 20% 50%, rgba(234, 20, 30, 0.2) 0%, transparent 30%),
+      radial-gradient(circle at 80% 50%, rgba(234, 20, 30, 0.2) 0%, transparent 30%);
+  }
+
+  .login-container {
+    width: 100%;
+    max-width: 420px;
+    padding: 40px;
+    background: rgba(34, 31, 31, 0.95);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255, 215, 0, 0.2);
+  }
+
+  .login-container::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+      to bottom right,
+      transparent 45%,
+      rgba(255, 215, 0, 0.1) 50%,
+      transparent 55%
+    );
+    animation: shine 4s infinite linear;
+    z-index: 0;
+  }
+
+  @keyframes shine {
+    0% { transform: translateX(-50%) translateY(-50%) rotate(45deg); }
+    100% { transform: translateX(50%) translateY(50%) rotate(45deg); }
+  }
+
+  .login-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  h2 {
+    color: var(--gold);
+    text-align: center;
+    font-size: 2.2rem;
+    margin-bottom: 30px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  form p {
+    margin-bottom: 25px;
+    position: relative;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--light);
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+  }
+
+  input[type="text"],
+  input[type="password"] {
+    width: 100%;
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    color: var(--light);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+  }
+
+  input[type="text"]:focus,
+  input[type="password"]:focus {
+    outline: none;
+    border-color: var(--gold);
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2);
+  }
+
+  button[type="submit"] {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(to right, var(--primary), var(--secondary));
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 10px;
+  }
+
+  button[type="submit"]:hover {
+    background: linear-gradient(to right, var(--secondary), var(--primary));
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(234, 20, 30, 0.4);
+  }
+
+  .links {
+    margin-top: 25px;
+    text-align: center;
+    font-size: 0.9rem;
+  }
+
+  .links a {
+    color: var(--gold);
+    text-decoration: none;
+    transition: color 0.3s ease;
+    position: relative;
+    padding-bottom: 2px;
+  }
+
+  .links a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--gold);
+    transition: width 0.3s ease;
+  }
+
+  .links a:hover::after {
+    width: 100%;
+  }
+
+  .links a:hover {
+    color: white;
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    margin: 20px 0;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.8rem;
+  }
+
+  .divider::before,
+  .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 0 10px;
+  }
+</style>
+
+<div class="login-container">
+  <div class="login-content">
+    <h2>Вуруд</h2>
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">Вуруд</button>
+      
+      <div class="divider">ё</div>
+      
+      <div class="links">
+        <p>Навсозии аккаунт? <a href="{% url 'register' %}">Регистратсия</a></p>
+        <p>Парол фаромӯш шуд? <a href="{% url 'password_reset' %}">Барқарорсозӣ</a></p>
+      </div>
+    </form>
+  </div>
+</div>

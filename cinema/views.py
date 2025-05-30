@@ -22,6 +22,7 @@ def register_view(request):
         form = CustomUserCreationForm()
     return render(request, 'register.html', {'form': form})
 
+
 def login_view(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
@@ -31,8 +32,10 @@ def login_view(request):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect('home')  
-        form = AuthenticationForm()
+                return redirect('home')  # Замените 'home' на имя вашего URL
+    else:
+        form = AuthenticationForm()  # Важно создать форму для GET-запросов
+    
     return render(request, 'login.html', {'form': form})
 
 def logout_view(request):
