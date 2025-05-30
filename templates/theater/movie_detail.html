@@ -1,0 +1,47 @@
+<!-- cinema/templates/cinema/movie_detail.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ movie.title }}</title>
+</head>
+<body>
+    <h1>{{ movie.title }}</h1>
+    
+    <img src="{{ movie.image.url }}" alt="{{ movie.title }}" width="300">
+    
+    <p><strong>Description:</strong> {{ movie.description }}</p>
+    <p><strong>Age Limit:</strong> {{ movie.age_limit }}</p>
+    <p><strong>Duration:</strong> {{ movie.duration }} minutes</p>
+    <p><strong>Country:</strong> {{ movie.country }}</p>
+    <p><strong>Release Year:</strong> {{ movie.rel_year }}</p>
+    
+    <h2>Actors</h2>
+    <ul>
+        {% for actor in movie.actors.all %}
+            <li>{{ actor.name }} ({{ actor.experience }} years experience)</li>
+        {% endfor %}
+    </ul>
+    
+    <h2>Directors</h2>
+    <ul>
+        {% for director in movie.directors.all %}
+            <li>{{ director.fullname }}</li>
+        {% endfor %}
+    </ul>
+    
+    <h2>Reviews</h2>
+    {% if reviews %}
+        {% for review in reviews %}
+            <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
+                <p><strong>Rating:</strong> {{ review.star_number }} stars</p>
+                <p>{{ review.descriptions }}</p>
+                <p><small>By: {{ review.user_id.full_name }} on {{ review.create_at }}</small></p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No reviews yet.</p>
+    {% endif %}
+</body>
+</html>
