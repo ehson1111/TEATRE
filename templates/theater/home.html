@@ -1,0 +1,28 @@
+{% extends 'theater/base.html' %}
+{% block title %}Саҳифаи асосӣ{% endblock %}
+{% block content %}
+<h1>Филмҳои пешниҳодшуда</h1>
+<div class="row">
+    {% for movie in featured_movies %}
+        <div class="col-md-3">
+            <div class="card mb-3">
+                <img src="{{ movie.poster.url }}" class="card-img-top" alt="{{ movie.title }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ movie.title }}</h5>
+                    <a href="{% url 'movie_detail' movie.pk %}" class="btn btn-primary">Тафсилот</a>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+<h2>Намоишҳои наздик</h2>
+<ul class="list-group">
+    {% for show in upcoming_shows %}
+        <li class="list-group-item">
+            {{ show.movie.title }} - {{ show.showing_date }} соат {{ show.start_time }}
+            <a href="{% url 'show_detail' show.pk %}" class="btn btn-sm btn-outline-primary float-right">Тафсилот</a>
+        </li>
+    {% endfor %}
+</ul>
+{% endblock %}

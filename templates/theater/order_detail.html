@@ -1,0 +1,11 @@
+{% extends 'theater/base.html' %}
+{% block title %}Тафсилоти фармоиш{% endblock %}
+{% block content %}
+<h1>Фармоиш №{{ order.pk }}</h1>
+<p>Филм: {{ order.show.movie.title }}</p>
+<p>Сана: {{ order.show.showing_date }} | Вақт: {{ order.show.start_time }}</p>
+<p>Зал: {{ order.show.hall.name }}</p>
+<p>Ҷойҳо: {{ order.seats }}</p>
+<p>Нарх: {{ order.total_price }} сомонӣ</p>
+<p>Санаи фармоиш: {{ order.created_at }}</p>
+{% endblock %}
