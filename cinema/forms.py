@@ -34,41 +34,18 @@ class ReviewForm(forms.ModelForm):
             'age': forms.NumberInput(attrs={'class': 'form-control'}),
         }
         
-class BookingForm(forms.ModelForm):
-    class Meta:
-        model = CustomUser
-        fields = ['email', 'full_name', 'phone_number', 'age']
-        widgets = {
-            'email': forms.EmailInput(attrs={'class': 'form-control'}),
-            'full_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'phone_number': forms.TextInput(attrs={'class': 'form-control'}),
-            'age': forms.NumberInput(attrs={'class': 'form-control'}),
-        }
-        labels = {
-            'email': 'Email',
-            'full_name': 'Full Name',
-            'phone_number': 'Phone Number',
-            'age': 'Age',
-        }
-        help_texts = {
-            'email': 'Please enter a valid email address.',
-            'full_name': 'Enter your full name.',
-            'phone_number': 'Enter your phone number.',
-            'age': 'Enter your age.',
-        }
-        error_messages = {
-            'email': {
-                'required': 'Email is required.',
-                'invalid': 'Enter a valid email address.',
-            },
-            'full_name': {
-                'required': 'Full name is required.',
-            },
-            'phone_number': {
-                'required': 'Phone number is required.',
-            },
-            'age': {
-                'required': 'Age is required.',
-                'invalid': 'Enter a valid age.',
-            },
-        }        
+from django import forms
+from .models import SeatPlace
+
+class BookingForm(forms.Form):
+    seats = forms.ModelMultipleChoiceField(
+        queryset=SeatPlace.objects.none(),  # Will be set in the view
+        widget=forms.CheckboxSelectMultiple,
+        required=True
+    )
+
+    def __init__(self, *args, **kwargs):
+        show = kwargs.pop('show', None)
+        super().__init__(*args, **kwargs)
+        if show:
+            self.fields['seats'].queryset = SeatPlace.objects.filter(hall=show.hall)

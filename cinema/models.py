@@ -165,7 +165,7 @@ class Order(models.Model):
     seats = models.PositiveIntegerField(default=1)
 
     def __str__(self):
-        return f"Order #{self.id} by {self.user.fullname}"
+        return f"Order #{self.user} by {self.user.email} for {self.show.movie.title} on {self.created_at.strftime('%Y-%m-%d %H:%M:%S')}"
     
 class Review(models.Model):
     star_number = models.IntegerField()
