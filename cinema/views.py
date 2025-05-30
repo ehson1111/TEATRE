@@ -227,4 +227,4 @@ def movie_detail(request, movie_id):
         'movie': movie,
         'reviews': reviews
     }
-    return render(request, 'theater/movie_detail.html', context)
+    return render(request, 'theater/movie_detail.html', context)    
