@@ -45,7 +45,7 @@ def login_view(request):
 
 
 def logout_view(request):
-    logout(request)
+    logout(request) 
     return redirect('login')
 
 
@@ -227,4 +227,208 @@ def movie_detail(request, movie_id):
         'movie': movie,
         'reviews': reviews
     }
-    return render(request, 'theater/movie_detail.html', context)    
+    return render(request, 'theater/movie_detail.html', context)  
+
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, SetPasswordForm
+from django.contrib.auth import get_user_model  # <-- Ислоҳ
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.utils.encoding import force_bytes, force_str
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.conf import settings
+
+from .forms import CustomUserCreationForm
+from .models import Review
+
+User = get_user_model() 
+
+def register_view(request):
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('login')
+    else:
+        form = CustomUserCreationForm()
+    return render(request, 'register.html', {'form': form})
+
+def login_view(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('home')
+    else:
+        form = AuthenticationForm()
+    return render(request, 'login.html', {'form': form})
+
+def logout_view(request):
+    logout(request)
+    return redirect('login')
+
+def otziv_view(request):
+    otzivs = Review.objects.all()
+    return render(request, 'otziv.html', {"otzivs": otzivs})
+
+def password_reset_request_view(request):
+    if request.method == "POST":
+        form = PasswordResetForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data["email"]
+            users = User.objects.filter(email=email)
+            for user in users:
+                token = default_token_generator.make_token(user)
+                uid = urlsafe_base64_encode(force_bytes(user.pk))
+                reset_link = request.build_absolute_uri(f"/reset/{uid}/{token}/")
+                
+                subject = "Барқароркунии парол"
+                message = render_to_string("password_reset_email.html", {
+                    "reset_link": reset_link,
+                    "user": user
+                })
+
+                send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
+            return redirect("password_reset_done")
+    else:
+        form = PasswordResetForm()
+    return render(request, "password_reset_form.html", {"form": form})
+
+def password_reset_done_view(request):
+    return render(request, "password_reset_done.html")
+
+def password_reset_confirm_view(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (User.DoesNotExist, ValueError, TypeError):
+        user = None
+
+    if user is not None and default_token_generator.check_token(user, token):
+        if request.method == "POST":
+            form = SetPasswordForm(user, request.POST)
+            if form.is_valid():
+                form.save()
+                return redirect("password_reset_complete")
+        else:
+            form = SetPasswordForm(user)
+        return render(request, "password_reset_confirm.html", {"form": form})
+    else:
+        return render(request, "password_reset_invalid.html")
+
+def password_reset_complete_view(request):
+    return render(request, "password_reset_complete.html")
+
+
+
+
+
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import get_user_model
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.utils.encoding import force_bytes, force_str
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.conf import settings
+from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
+from django.urls import reverse_lazy
+from django.contrib.messages.views import SuccessMessageMixin
+
+from .forms import CustomUserCreationForm
+from .models import Review
+
+User = get_user_model()
+
+class UserForgotPasswordView(SuccessMessageMixin, PasswordResetView):
+    template_name = 'system/user_password_reset.html'
+    success_url = reverse_lazy('password_reset_done')
+    success_message = 'Письмо с инструкцией по восстановлению пароля отправлено на ваш email'
+    email_template_name = 'system/email/password_reset_email.html'
+    subject_template_name = 'system/email/password_reset_subject.txt'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Запрос  восстановление пароля'
+        context['domain'] = '127.0.0.1:8000'  
+        context['protocol'] = 'http'
+        return context
+        
+class UserForgotPasswordView(SuccessMessageMixin, PasswordResetView):
+    template_name = 'system/user_password_reset.html'
+    success_url = reverse_lazy('password_reset_done')
+    success_message = 'Письмо с инструкцией по восстановлению пароля отправлено на ваш email'
+    email_template_name = 'system/email/password_reset_email.html'
+    subject_template_name = 'system/email/password_reset_subject.txt'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Запрос на восстановление пароля'
+        return context
+
+
+class UserPasswordResetConfirmView(SuccessMessageMixin, PasswordResetConfirmView):
+    template_name = 'system/user_password_set_new.html'
+    success_url = reverse_lazy('password_reset_complete')
+    success_message = 'Пароль успешно изменен. Можете авторизоваться на сайте.'
+               
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Установить новый пароль'
+        return context
+
+
+def password_reset_done_view(request):
+    return render(request, "system/password_reset_done.html")
+
+
+def password_reset_complete_view(request):
+    return render(request, "system/password_reset_complete.html")
+
+from django.core.mail import send_mail
+from django.conf import settings
+
+send_mail(
+    'Санҷиши почтаи таъқиб',
+    'Ин як паёми санҷишист, ки кӯшиш мекунад барои ресет кардани парол.',
+    settings.EMAIL_HOST_USER,  # почтаи дурусти email
+    ['btillohon@gmail.com'],  # replace with email of the user
+    fail_silently=False,
+)
+
+
+class UserForgotPasswordView(SuccessMessageMixin, PasswordResetView):
+    # ... остальной код ...
+    
+    def form_valid(self, form):
+        opts = {
+            'use_https': self.request.is_secure(),
+            'token_generator': self.token_generator,
+            'from_email': settings.DEFAULT_FROM_EMAIL,
+            'email_template_name': self.email_template_name,
+            'subject_template_name': self.subject_template_name,
+            'request': self.request,
+            'html_email_template_name': self.html_email_template_name,
+            'extra_email_context': {
+                'domain': 'ваш-домен.com',  # Замените на реальный домен
+                'protocol': 'https' if self.request.is_secure() else 'http',
+            },
+        }
+        form.save(**opts)
+        return super().form_valid(form)
+    
+
+class UserForgotPasswordView(SuccessMessageMixin, PasswordResetView):
+    # ...
+    extra_email_context = {
+        'domain': '127.0.0.1:8000',  # Ё домени аслии шумо
+        'protocol': 'http'
+    }
