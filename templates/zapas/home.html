@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+<h1>Избранные фильмы</h1>
+<ul>
+    {% for movie in featured_movies %}
+        <li>
+            <a href="{% url 'movie_detail' movie.pk %}">{{ movie.title }}</a> — {{ movie.rel_year }} ({{ movie.age_limit }})
+        </li>
+    {% empty %}
+        <li>Нет доступных фильмов.</li>
+    {% endfor %}
+</ul>
+
+<h2>Ближайшие показы</h2>
+<ul>
+    {% for show in upcoming_shows %}
+        <li>
+            {{ show.movie.title }} — {{ show.showing_date }} в {{ show.showing_time }} (Зал: {{ show.hall.name }})
+            <a href="{% url 'show_detail' show.pk %}">Бронировать</a>
+        </li>
+    {% empty %}
+        <li>Нет предстоящих показов.</li>
+    {% endfor %}
+</ul>
+{% endblock %}

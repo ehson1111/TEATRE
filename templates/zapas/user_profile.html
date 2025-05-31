@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Профиль пользователя{% endblock %}
+
+{% block content %}
+<h1>Профиль: {{ user_profile.full_name }}</h1>
+<p>Email: {{ user_profile.email }}</p>
+<p>Телефон: {{ user_profile.phone_number }}</p>
+<p>Возраст: {{ user_profile.age }}</p>
+
+<h2>Заказы</h2>
+<ul>
+    {% for order in orders %}
+        <li>
+            Заказ №{{ order.id }} — Фильм: {{ order.show.movie.title }} — Дата: {{ order.created_at|date:"d.m.Y H:i" }} — Мест: {{ order.seats }} — Статус: {{ order.get_payment_status_display }}
+            <a href="{% url 'order_detail' order.pk %}">Подробнее</a>
+        </li>
+    {% empty %}
+        <li>Заказов нет.</li>
+    {% endfor %}
+</ul>
+{% endblock %}

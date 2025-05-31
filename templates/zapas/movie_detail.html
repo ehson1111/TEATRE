@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}{{ movie.title }}{% endblock %}
+
+{% block content %}
+<h1>{{ movie.title }} ({{ movie.rel_year }})</h1>
+<img src="{{ movie.image.url }}" alt="Постер {{ movie.title }}" style="max-width: 300px;"/>
+<p><strong>Возрастное ограничение:</strong> {{ movie.age_limit }}</p>
+<p><strong>Страна:</strong> {{ movie.country }}</p>
+<p><strong>Длительность:</strong> {{ movie.duration }} минут</p>
+<p>{{ movie.description }}</p>
+
+<h3>Актёры</h3>
+<ul>
+    {% for actor in movie.actors.all %}
+        <li>{{ actor.name }}</li>
+    {% empty %}
+        <li>Информация отсутствует</li>
+    {% endfor %}
+</ul>
+
+<h3>Режиссёры</h3>
+<ul>
+    {% for director in movie.directors.all %}
+        <li>{{ director.fullname }}</li>
+    {% empty %}
+        <li>Информация отсутствует</li>
+    {% endfor %}
+</ul>
+
+<h3>Трейлеры</h3>
+<ul>
+    {% for trailer in trailers %}
+        <li><a href="{{ trailer.video_url }}" target="_blank">Смотреть трейлер</a></li>
+    {% empty %}
+        <li>Трейлеры отсутствуют</li>
+    {% endfor %}
+</ul>
+
+<h3>Отзывы (Средний рейтинг: {{ average_rating }})</h3>
+<ul>
+    {% for review in reviews %}
+        <li>
+            {{ review.user_id.full_name }} — {{ review.star_number }}★<br>
+            {{ review.descriptions }}<br>
+            <small>Дата: {{ review.create_at }}</small>
+        </li>
+    {% empty %}
+        <li>Отзывов пока нет.</li>
+    {% endfor %}
+</ul>
+
+{% if user.is_authenticated %}
+    <h3>Оставить отзыв</h3>
+    <form method="post" action="{% url 'add_review' movie.pk %}">
+        {% csrf_token %}
+        {{ review_form.as_p }}
+        <button type="submit">Отправить</button>
+    </form>
+{% else %}
+    <p><a href="{% url 'login' %}">Войдите</a>, чтобы оставить отзыв.</p>
+{% endif %}
+{% endblock %}
