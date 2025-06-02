@@ -1,0 +1,18 @@
+{% extends 'theater/base.html' %}
+
+{% block title %}Брон кардани ҷойҳо - {{ show.movie.title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Брон кардани ҷой барои намоиши: {{ show.movie.title }}</h2>
+    <p>Сана: {{ show.showing_date }} | Вақт: {{ show.start_time }} | Зал: {{ show.hall.name }}</p>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <button type="submit" class="btn btn-success">Брон кардан</button>
+        <a href="{% url 'show_detail' show.pk %}" class="btn btn-secondary">Бозгашт</a>
+    </form>
+</div>
+{% endblock %}

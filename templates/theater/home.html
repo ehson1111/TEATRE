@@ -1,603 +1,70 @@
-{% extends 'theater/base.html' %}
-{% block title %}Саҳифаи асосӣ{% endblock %}
+{% extends 'base.html' %}
 
 {% block content %}
-<style>
-    /* Supreme Luxury Theater Styling */
-    :root {
-        --gold: #FFD700;
-        --platinum: #E5E4E2;
-        --velvet: #500000;
-        --midnight: #0A0A1A;
-        --spotlight: #FFF9E6;
-        --diamond: #B9F2FF;
-    }
-    
-    body {
-        background-color: var(--midnight);
-        font-family: 'Cormorant Garamond', 'Noto Naskh Arabic', serif;
-        color: var(--platinum);
-        min-height: 100vh;
-        overflow-x: hidden;
-    }
-    
-    .supreme-header {
-        background: linear-gradient(135deg, rgba(10,10,26,0.95) 0%, rgba(80,0,0,0.85) 100%),
-                    url('https://example.com/gold-theater.jpg');
-        background-size: cover;
-        background-position: center;
-        padding: 8rem 0;
-        margin-bottom: 5rem;
-        position: relative;
-        overflow: hidden;
-        border-bottom: 4px solid var(--gold);
-        box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-    }
-    
-    .supreme-header::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: radial-gradient(circle at 20% 30%, 
-                    rgba(255, 215, 0, 0.25) 0%, 
-                    transparent 70%);
-        animation: goldenGlow 8s infinite alternate;
-    }
-    
-    @keyframes goldenGlow {
-        0% { opacity: 0.25; }
-        100% { opacity: 0.4; }
-    }
-    
-    h1, h2, h3 {
-        font-weight: 700;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-    }
-    
-    h1 {
-        font-size: 4rem;
-        text-shadow: 0 4px 15px rgba(0,0,0,0.7);
-        margin-bottom: 2rem;
-        color: var(--spotlight);
-        position: relative;
-        display: inline-block;
-        background: linear-gradient(to right, var(--gold), var(--diamond));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        animation: titleShine 3s infinite alternate;
-    }
-    
-    @keyframes titleShine {
-        0% { text-shadow: 0 4px 15px rgba(0,0,0,0.7); }
-        100% { text-shadow: 0 4px 30px rgba(255, 215, 0, 0.5); }
-    }
-    
-    h1::after {
-        content: '';
-        position: absolute;
-        bottom: -20px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 150px;
-        height: 4px;
-        background: linear-gradient(to right, transparent, var(--gold), transparent);
-    }
-    
-    h2 {
-        font-size: 2.5rem;
-        color: transparent;
-        background: linear-gradient(to right, var(--gold), var(--platinum));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 4rem;
-        position: relative;
-        padding-bottom: 20px;
-        text-shadow: 0 2px 5px rgba(0,0,0,0.3);
-    }
-    
-    h2::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 100px;
-        height: 3px;
-        background: linear-gradient(90deg, transparent 0%, var(--gold) 30%, var(--diamond) 70%, transparent 100%);
-        box-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
-    }
-    
-    .section-subtitle {
-        font-size: 1.3rem;
-        letter-spacing: 4px;
-        color: var(--platinum);
-        margin-bottom: 4rem;
-        text-align: center;
-        text-shadow: 0 1px 3px rgba(0,0,0,0.5);
-        position: relative;
-        display: inline-block;
-    }
-    
-    .section-subtitle::before, .section-subtitle::after {
-        content: '✧';
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        color: var(--gold);
-        font-size: 1rem;
-    }
-    
-    .section-subtitle::before {
-        left: -30px;
-    }
-    
-    .section-subtitle::after {
-        right: -30px;
-    }
-    
-    /* Diamond-Encrusted Movie Cards */
-    .diamond-card {
-        border: none;
-        border-radius: 0;
-        overflow: hidden;
-        transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
-        box-shadow: 0 15px 40px rgba(0,0,0,0.4);
-        background: linear-gradient(145deg, #0E0E24 0%, #1A1A3A 100%);
-        margin-bottom: 3rem;
-        position: relative;
-        border-top: 3px solid var(--gold);
-    }
-    
-    .diamond-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(135deg, 
-                    rgba(255, 215, 0, 0.1) 0%, 
-                    transparent 50%);
-        pointer-events: none;
-    }
-    
-    .diamond-card::after {
-        content: '';
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        width: 30px;
-        height: 30px;
-        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="%23B9F2FF" d="M50 0 L100 50 L50 100 L0 50 Z"/></svg>');
-        background-size: contain;
-        opacity: 0.7;
-        filter: drop-shadow(0 0 5px rgba(185, 242, 255, 0.7));
-    }
-    
-    .diamond-card:hover {
-        transform: translateY(-20px) rotateZ(1deg);
-        box-shadow: 0 25px 60px rgba(255, 215, 0, 0.3);
-    }
-    
-    .diamond-card .card-img-top {
-        height: 420px;
-        object-fit: cover;
-        object-position: center;
-        transition: all 1s ease;
-        filter: sepia(30%) brightness(0.9);
-    }
-    
-    .diamond-card:hover .card-img-top {
-        transform: scale(1.08);
-        filter: sepia(0%) brightness(1.1);
-    }
-    
-    .diamond-card .card-body {
-        padding: 2.5rem;
-        position: relative;
-        z-index: 1;
-    }
-    
-    .diamond-card .card-title {
-        font-weight: 700;
-        font-size: 1.8rem;
-        margin-bottom: 1.5rem;
-        color: var(--spotlight);
-        letter-spacing: 1.5px;
-        text-shadow: 0 2px 5px rgba(0,0,0,0.5);
-    }
-    
-    .diamond-card .card-text {
-        color: var(--platinum);
-        font-size: 1.05rem;
-        margin-bottom: 2rem;
-        line-height: 1.8;
-        font-weight: 300;
-    }
-    
-    .btn-diamond {
-        background: transparent;
-        color: var(--gold);
-        border: 2px solid var(--gold);
-        padding: 0.8rem 2.5rem;
-        border-radius: 0;
-        font-weight: 600;
-        letter-spacing: 2px;
-        transition: all 0.5s ease;
-        position: relative;
-        overflow: hidden;
-        text-transform: uppercase;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    }
-    
-    .btn-diamond::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.3), transparent);
-        transition: all 0.7s ease;
-    }
-    
-    .btn-diamond:hover {
-        color: var(--spotlight);
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(255, 215, 0, 0.4);
-        text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-    }
-    
-    .btn-diamond:hover::before {
-        left: 100%;
-    }
-    
-    /* Royal Show List */
-    .royal-list {
-        background: rgba(10, 10, 26, 0.6);
-        border-radius: 0;
-        border: 1px solid rgba(255, 215, 0, 0.4);
-        backdrop-filter: blur(15px);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .royal-list::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(135deg, 
-                    rgba(255, 215, 0, 0.05) 0%, 
-                    transparent 50%);
-        pointer-events: none;
-    }
-    
-    .royal-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 2rem;
-        border-bottom: 1px solid rgba(255, 215, 0, 0.2);
-        transition: all 0.5s ease;
-        background: transparent;
-        position: relative;
-    }
-    
-    .royal-item:last-child {
-        border-bottom: none;
-    }
-    
-    .royal-item:hover {
-        background: rgba(255, 215, 0, 0.08);
-        transform: translateX(15px);
-    }
-    
-    .royal-item::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 3px;
-        height: 0;
-        background: var(--gold);
-        transition: all 0.5s ease;
-    }
-    
-    .royal-item:hover::before {
-        height: 100%;
-    }
-    
-    .royal-info {
-        flex: 1;
-    }
-    
-    .royal-title {
-        font-weight: 600;
-        color: var(--spotlight);
-        margin-bottom: 0.8rem;
-        font-size: 1.4rem;
-        letter-spacing: 1px;
-        position: relative;
-        display: inline-block;
-    }
-    
-    .royal-title::after {
-        content: '';
-        position: absolute;
-        bottom: -5px;
-        left: 0;
-        width: 0;
-        height: 1px;
-        background: var(--gold);
-        transition: all 0.5s ease;
-    }
-    
-    .royal-item:hover .royal-title::after {
-        width: 100%;
-    }
-    
-    .royal-time {
-        color: var(--platinum);
-        font-size: 1.1rem;
-        letter-spacing: 1px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-    
-    .royal-time i {
-        color: var(--gold);
-    }
-    
-    .badge-royal {
-        background: transparent;
-        color: var(--diamond);
-        font-weight: 600;
-        padding: 0.5rem 1.2rem;
-        border: 1px solid var(--diamond);
-        border-radius: 0;
-        letter-spacing: 1.5px;
-        text-transform: uppercase;
-        font-size: 0.8rem;
-        box-shadow: 0 0 10px rgba(185, 242, 255, 0.3);
-    }
-    
-    /* Ornamental Elements */
-    .gold-ornament {
-        position: absolute;
-        width: 60px;
-        height: 60px;
-        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="%23FFD700" d="M50 0 C70 0 85 15 100 35 L85 50 C70 30 50 20 50 20 C50 20 30 30 15 50 L0 35 C15 15 30 0 50 0 Z"/></svg>');
-        background-size: contain;
-        opacity: 0.8;
-        filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.5));
-    }
-    
-    /* Marquee Effect */
-    .marquee {
-        position: relative;
-        width: 100%;
-        overflow: hidden;
-        background: rgba(0,0,0,0.3);
-        padding: 1rem 0;
-        margin: 4rem 0;
-        border-top: 1px solid rgba(255, 215, 0, 0.3);
-        border-bottom: 1px solid rgba(255, 215, 0, 0.3);
-    }
-    
-    .marquee-content {
-        display: flex;
-        animation: marquee 30s linear infinite;
-        white-space: nowrap;
-    }
-    
-    .marquee-item {
-        padding: 0 3rem;
-        color: var(--gold);
-        font-size: 1.2rem;
-        letter-spacing: 2px;
-        position: relative;
-    }
-    
-    .marquee-item::after {
-        content: '✦';
-        position: absolute;
-        right: 0;
-        top: 50%;
-        transform: translateY(-50%);
-    }
-    
-    @keyframes marquee {
-        0% { transform: translateX(0); }
-        100% { transform: translateX(-50%); }
-    }
-    
-    /* Responsive Adjustments */
-    @media (max-width: 1200px) {
-        h1 {
-            font-size: 3.5rem;
-        }
-        
-        .diamond-card .card-img-top {
-            height: 360px;
-        }
-    }
-    
-    @media (max-width: 992px) {
-        h1 {
-            font-size: 3rem;
-        }
-        
-        h2 {
-            font-size: 2.2rem;
-        }
-        
-        .supreme-header {
-            padding: 6rem 0;
-        }
-    }
-    
-    @media (max-width: 768px) {
-        .supreme-header {
-            padding: 4rem 0;
-        }
-        
-        h1 {
-            font-size: 2.5rem;
-        }
-        
-        .section-subtitle {
-            font-size: 1.1rem;
-            letter-spacing: 2px;
-        }
-        
-        .royal-item {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 1.5rem;
-            padding: 1.5rem;
-        }
-        
-        .diamond-card .card-img-top {
-            height: 300px;
-        }
-    }
-</style>
-
-<div class="supreme-header text-center">
-    <div class="container position-relative">
-        <div class="gold-ornament" style="top: 30px; right: 30px;"></div>
-        <div class="gold-ornament" style="bottom: 30px; left: 30px; transform: rotate(180deg);"></div>
-        
-        <h1>Театри Подшоҳӣ</h1>
-        <p class="section-subtitle">Маросими фарҳангии олиҷаноб</p>
-    </div>
-</div>
-
-<div class="container my-5">
-    <div class="text-center mb-5">
-        <h2>Намоишҳои фаромӯшнашаванда</h2>
-        <p class="section-subtitle">Маҳсулоти махсуси мо</p>
-    </div>
-    
-    <div class="row">
-        {% for movie in featured_movies %}
-        <div class="col-lg-3 col-md-6 mb-4">
-            <div class="diamond-card h-100">
-                <img src="{{ movie.poster.url }}" class="card-img-top" alt="{{ movie.title }}">
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title">{{ movie.title }}</h5>
-                    <p class="card-text">{{ movie.short_description|truncatechars:120 }}</p>
-                    <div class="mt-auto">
-                        <a href="{% url 'movie_detail' movie.pk %}" class="btn btn-diamond w-100">Бинанӣ</a>
-                    </div>
-                </div>
+<div class="max-w-7xl mx-auto">
+    <!-- Hero Section -->
+    <section class="bg-indigo-900 text-white rounded-xl p-8 mb-12">
+        <div class="flex flex-col md:flex-row items-center">
+            <div class="md:w-1/2 mb-6 md:mb-0">
+                <h1 class="text-4xl font-bold mb-4">Welcome to CinemaPlus</h1>
+                <p class="text-xl mb-6">Experience movies like never before in our premium theaters</p>
+                <a href="{% url 'movie_list' %}" class="bg-white text-indigo-900 px-6 py-3 rounded-lg font-bold text-lg hover:bg-gray-200 transition">
+                    Browse Movies
+                </a>
+            </div>
+            <div class="md:w-1/2">
+                <img src="https://via.placeholder.com/600x400" alt="Cinema" class="rounded-lg shadow-2xl">
             </div>
         </div>
-        {% endfor %}
-    </div>
+    </section>
 
-    <div class="marquee">
-        <div class="marquee-content">
-            {% for i in "12345" %}
-            <div class="marquee-item">★ Намоишҳои махсус ★</div>
-            <div class="marquee-item">★ Чои нишасти фаромӯшнашаванда ★</div>
-            <div class="marquee-item">★ Таҷрибаи театрии олиҷаноб ★</div>
+    <!-- Featured Movies -->
+    <section class="mb-12">
+        <h2 class="text-3xl font-bold mb-6">Featured Movies</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+            {% for movie in featured_movies %}
+            <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition">
+                <a href="{% url 'movie_detail' movie.pk %}">
+                    <img src="{{ movie.poster.url }}" alt="{{ movie.title }}" class="w-full h-64 object-cover">
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg mb-2">{{ movie.title }}</h3>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">{{ movie.genre }}</span>
+                            <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full text-xs font-medium">
+                                {{ movie.duration }} min
+                            </span>
+                        </div>
+                    </div>
+                </a>
+            </div>
             {% endfor %}
         </div>
-    </div>
+    </section>
 
-    <div class="text-center mt-5 mb-4">
-        <h2>Барномаи подшоҳӣ</h2>
-        <p class="section-subtitle">Намоишҳои ояндаи мо</p>
-    </div>
-    
-    <div class="royal-list">
-        {% for show in upcoming_shows %}
-        <div class="royal-item">
-            <div class="royal-info">
-                <div class="royal-title">{{ show.movie.title }}</div>
-                <div class="royal-time">
-                    <i class="fas fa-clock"></i>
-                    {{ show.showing_date|date:"l, d F Y" }} | соати {{ show.start_time }}
-                    {% if show.is_today %}
-                    <span class="badge-royal ms-3">Намоиши имрӯз</span>
-                    {% endif %}
+    <!-- Upcoming Shows -->
+    <section>
+        <h2 class="text-3xl font-bold mb-6">Upcoming Shows</h2>
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            {% for show in upcoming_shows %}
+            <div class="border-b last:border-b-0 hover:bg-gray-50 transition">
+                <div class="p-6 flex flex-col md:flex-row justify-between items-center">
+                    <div class="mb-4 md:mb-0">
+                        <h3 class="font-semibold text-xl">{{ show.movie.title }}</h3>
+                        <p class="text-gray-600">{{ show.showing_date }} at {{ show.start_time }}</p>
+                        <p class="text-gray-600">{{ show.hall.name }}</p>
+                    </div>
+                    <a href="{% url 'show_detail' show.pk %}" 
+                       class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-medium">
+                        Book Now
+                    </a>
                 </div>
             </div>
-            <a href="{% url 'show_detail' show.pk %}" class="btn btn-outline-light btn-sm">Тафсилот</a>
+            {% empty %}
+            <div class="p-8 text-center text-gray-500">
+                No upcoming shows scheduled.
+            </div>
+            {% endfor %}
         </div>
-        {% endfor %}
-    </div>
+    </section>
 </div>
-
-<script>
-    // Supreme luxury animations
-    document.addEventListener('DOMContentLoaded', function() {
-        const animateSupremeElements = function() {
-            const cards = document.querySelectorAll('.diamond-card');
-            const shows = document.querySelectorAll('.royal-item');
-            
-            cards.forEach((card, index) => {
-                const cardPosition = card.getBoundingClientRect().top;
-                const screenPosition = window.innerHeight / 1.2;
-                
-                if (cardPosition < screenPosition) {
-                    setTimeout(() => {
-                        card.style.opacity = '1';
-                        card.style.transform = 'translateY(0) rotateZ(0)';
-                    }, index * 150);
-                }
-            });
-            
-            shows.forEach((show, index) => {
-                const showPosition = show.getBoundingClientRect().top;
-                const screenPosition = window.innerHeight / 1.2;
-                
-                if (showPosition < screenPosition) {
-                    setTimeout(() => {
-                        show.style.opacity = '1';
-                        show.style.transform = 'translateX(0)';
-                        show.querySelector('.royal-title::after').style.width = '0';
-                    }, index * 100);
-                }
-            });
-        };
-        
-        // Set initial state
-        const cards = document.querySelectorAll('.diamond-card');
-        const shows = document.querySelectorAll('.royal-item');
-        
-        cards.forEach(card => {
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(40px) rotateZ(3deg)';
-            card.style.transition = 'all 1s cubic-bezier(0.19, 1, 0.22, 1)';
-        });
-        
-        shows.forEach(show => {
-            show.style.opacity = '0';
-            show.style.transform = 'translateX(-40px)';
-            show.style.transition = 'all 0.8s cubic-bezier(0.19, 1, 0.22, 1)';
-        });
-        
-        window.addEventListener('scroll', animateSupremeElements);
-        animateSupremeElements(); // Run once on load
-        
-        // Add Font Awesome if not already loaded
-        if (!document.querySelector('.fa-clock')) {
-            const fa = document.createElement('link');
-            fa.rel = 'stylesheet';
-            fa.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css';
-            document.head.appendChild(fa);
-        }
-    });
-</script>
 {% endblock %}

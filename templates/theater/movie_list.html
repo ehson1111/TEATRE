@@ -1,18 +1,38 @@
-{% extends 'theater/base.html' %}
-{% block title %}Рӯйхати филмҳо{% endblock %}
+{% extends 'base.html' %}
+
+{% block title %}All Movies{% endblock %}
+
 {% block content %}
-<h1>Ҳамаи филмҳо</h1>
-<div class="row">
-    {% for movie in movies %}
-        <div class="col-md-3">
-            <div class="card mb-3">
-                <img src="{{ movie.poster.url }}" class="card-img-top" alt="{{ movie.title }}">
-                <div class="card-body">
-                    <h5 class="card-title">{{ movie.title }}</h5>
-                    <a href="{% url 'movie_detail' movie.pk %}" class="btn btn-primary">Тафсилот</a>
-                </div>
-            </div>
+<div class="max-w-7xl mx-auto">
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold">All Movies</h1>
+        <div class="flex space-x-4">
+            <button class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg">Filter</button>
+            <button class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg">Sort</button>
         </div>
-    {% endfor %}
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+        {% for movie in movies %}
+        <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1">
+            <a href="{% url 'movie_detail' movie.pk %}">
+                <img src="{{ movie.poster.url }}" alt="{{ movie.title }}" class="w-full h-80 object-cover">
+                <div class="p-4">
+                    <h3 class="font-bold text-xl mb-2">{{ movie.title }}</h3>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">{{ movie.genre }}</span>
+                        <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full text-xs font-medium">
+                            {{ movie.duration }} min
+                        </span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% empty %}
+        <div class="col-span-full text-center py-12 text-gray-500">
+            No movies available at this time.
+        </div>
+        {% endfor %}
+    </div>
 </div>
 {% endblock %}

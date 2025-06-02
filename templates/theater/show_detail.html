@@ -1,21 +1,156 @@
-{% extends 'theater/base.html' %}
-{% block title %}Намоиши {{ show.movie.title }}{% endblock %}
+{% extends 'base.html' %}
+
+{% block title %}Book Tickets for {{ show.movie.title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .seat {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 5px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+    .available {
+        background-color: #e5e7eb;
+        color: #374151;
+    }
+    .available:hover {
+        background-color: #d1d5db;
+    }
+    .selected {
+        background-color: #4f46e5;
+        color: white;
+    }
+    .booked {
+        background-color: #ef4444;
+        color: white;
+        cursor: not-allowed;
+    }
+    .screen {
+        background-color: #111827;
+        color: white;
+        padding: 10px;
+        text-align: center;
+        margin-bottom: 20px;
+        border-radius: 5px;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<h1>{{ show.movie.title }}</h1>
-<p>Сана: {{ show.showing_date }} | Вақт: {{ show.start_time }}</p>
-<p>Зал: {{ show.hall.name }}</p>
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+        <h1 class="text-3xl font-bold mb-2">{{ show.movie.title }}</h1>
+        <div class="flex flex-col md:flex-row justify-between mb-6">
+            <div>
+                <p class="text-gray-600"><i class="fas fa-calendar-alt mr-2"></i>{{ show.showing_date }}</p>
+                <p class="text-gray-600"><i class="fas fa-clock mr-2"></i>{{ show.start_time }}</p>
+            </div>
+            <div>
+                <p class="text-gray-600"><i class="fas fa-map-marker-alt mr-2"></i>{{ show.hall.name }}</p>
+                <p class="text-gray-600"><i class="fas fa-ticket-alt mr-2"></i>${{ show.price }} per seat</p>
+            </div>
+        </div>
+    </div>
 
-<h3>Ҷойҳои нишаст</h3>
-<form method="post" action="{% url 'book_tickets' show.pk %}">
-    {% csrf_token %}
-    {{ booking_form.as_p }}
-    <button type="submit" class="btn btn-primary">Брон кардан</button>
-</form>
+    <div class="screen text-center mb-8">
+        SCREEN
+    </div>
 
-<h4>Ҷойҳои броншуда:</h4>
-<ul>
-    {% for seat in booked_seats %}
-        <li>{{ seat }}</li>
-    {% endfor %}
-</ul>
+    <form id="booking-form" method="post" action="{% url 'book_tickets' show.pk %}">
+        {% csrf_token %}
+        <div class="grid grid-cols-1 gap-6 mb-8">
+            {% for row, seats in seat_rows.items %}
+            <div class="flex justify-center">
+                <div class="flex items-center">
+                    <span class="mr-3 font-bold">{{ row }}</span>
+                    {% for seat in seats %}
+                    <div class="seat {% if seat.is_booked %}booked{% else %}available{% endif %}"
+                         data-seat-id="{{ seat.id }}"
+                         onclick="{% if not seat.is_booked %}toggleSeat(this){% endif %}">
+                        {{ seat.number|slice:"1:" }}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="bg-white rounded-xl shadow-md p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold">Selected Seats</h3>
+                <div id="total-price" class="text-2xl font-bold">$0</div>
+            </div>
+            
+            <div id="selected-seats" class="mb-6 flex flex-wrap gap-2">
+                <!-- Selected seats will appear here -->
+            </div>
+            
+            <input type="hidden" name="seats" id="seats-input">
+            
+            <button type="submit" id="book-button" 
+                    class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-lg font-bold text-lg disabled:opacity-50"
+                    disabled>
+                Book Selected Seats
+            </button>
+        </div>
+    </form>
+</div>
+
+{% block extra_js %}
+<script>
+    let selectedSeats = [];
+    const pricePerSeat = {{ show.price }};
+    
+    function toggleSeat(element) {
+        const seatId = element.getAttribute('data-seat-id');
+        const seatNumber = element.textContent;
+        const row = element.parentElement.firstElementChild.textContent.trim();
+        const fullSeatNumber = row + seatNumber;
+        
+        if (element.classList.contains('selected')) {
+            // Deselect seat
+            element.classList.remove('selected');
+            element.classList.add('available');
+            selectedSeats = selectedSeats.filter(id => id !== seatId);
+        } else {
+            // Select seat
+            element.classList.remove('available');
+            element.classList.add('selected');
+            selectedSeats.push(seatId);
+        }
+        
+        updateSelectedSeatsDisplay();
+        updateForm();
+    }
+    
+    function updateSelectedSeatsDisplay() {
+        const selectedSeatsContainer = document.getElementById('selected-seats');
+        const totalPriceElement = document.getElementById('total-price');
+        const bookButton = document.getElementById('book-button');
+        
+        selectedSeatsContainer.innerHTML = selectedSeats.length > 0 ? 
+            selectedSeats.map(id => {
+                const seatElement = document.querySelector(`[data-seat-id="${id}"]`);
+                const seatNumber = seatElement.textContent;
+                const row = seatElement.parentElement.firstElementChild.textContent.trim();
+                return `<span class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full">${row}${seatNumber}</span>`;
+            }).join('') : 
+            '<p class="text-gray-500">No seats selected</p>';
+        
+        totalPriceElement.textContent = `$${selectedSeats.length * pricePerSeat}`;
+        bookButton.disabled = selectedSeats.length === 0;
+    }
+    
+    function updateForm() {
+        document.getElementById('seats-input').value = JSON.stringify(selectedSeats);
+    }
+</script>
+{% endblock %}
+
 {% endblock %}

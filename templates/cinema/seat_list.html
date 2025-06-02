@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<title>Все места</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap');
+
+  body {
+    margin: 0;
+    padding: 50px 30px;
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(135deg, #1c1c1c, #2e2e2e);
+    color: #eee;
+    min-height: 100vh;
+  }
+
+  h1 {
+    text-align: center;
+    font-weight: 700;
+    font-size: 2.8rem;
+    margin-bottom: 50px;
+    letter-spacing: 1.8px;
+    text-shadow: 0 2px 5px rgba(0,0,0,0.7);
+  }
+
+  form {
+    max-width: 400px;
+    margin: 0 auto 40px auto;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-weight: 600;
+  }
+
+  label {
+    font-size: 1.1rem;
+    user-select: none;
+  }
+
+  select {
+    flex: 1;
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: none;
+    background: #444;
+    color: #eee;
+    font-size: 1rem;
+    box-shadow: inset 2px 2px 6px rgba(0,0,0,0.7);
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+
+  select:hover, select:focus {
+    background: #555;
+    outline: none;
+  }
+
+  a.add-seat {
+    display: block;
+    max-width: 400px;
+    margin: 0 auto 40px auto;
+    text-align: center;
+    background: #27ae60;
+    padding: 14px 0;
+    border-radius: 30px;
+    color: white;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 6px 15px rgba(39, 174, 96, 0.6);
+    transition: background 0.3s ease, transform 0.2s ease;
+    user-select: none;
+  }
+
+  a.add-seat:hover {
+    background: #219150;
+    transform: translateY(-3px);
+  }
+
+  ul {
+    max-width: 700px;
+    margin: auto;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fill,minmax(320px,1fr));
+    gap: 50px;
+  }
+
+  li {
+    background: rgba(255,255,255,0.1);
+    border-radius: 18px;
+    padding: 28px 30px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+    color: #fff;
+    font-weight: 600;
+    font-size: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  li:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 18px 48px rgba(0,0,0,0.7);
+  }
+
+  .seat-info {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px 20px;
+  }
+
+  .seat-status {
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 14px;
+    user-select: none;
+  }
+
+  .available {
+    background: #27ae60;
+    color: #def7e0;
+  }
+
+  .booked {
+    background: #c0392b;
+    color: #f9d6d5;
+  }
+
+  .actions {
+    display: flex;
+    gap: 25px;
+    font-weight: 700;
+  }
+
+  .actions a {
+    color: #ecf0f1;
+    background: rgba(255,255,255,0.15);
+    padding: 10px 18px;
+    border-radius: 14px;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba(255,255,255,0.1);
+    transition: background 0.3s ease, transform 0.2s ease;
+    user-select: none;
+  }
+
+  .actions a:hover {
+    background: #3498db;
+    box-shadow: 0 8px 25px rgba(52,152,219,0.6);
+    transform: translateY(-3px);
+  }
+
+  a.hall-list {
+    display: block;
+    max-width: 400px;
+    margin: 50px auto 0 auto;
+    text-align: center;
+    font-weight: 700;
+    color: #3498db;
+    text-decoration: none;
+    user-select: none;
+    transition: color 0.3s ease;
+  }
+
+  a.hall-list:hover {
+    color: #1c5f99;
+  }
+
+  @media (max-width: 480px) {
+    ul {
+      grid-template-columns: 1fr;
+      gap: 35px;
+    }
+    li {
+      font-size: 1.1rem;
+    }
+    .actions {
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+  }
+</style>
+</head>
+<body>
+
+  <h1>Все места</h1>
+
+  <form method="get">
+    <label for="hall">Фильтр по залу:</label>
+    <select name="hall" id="hall" onchange="this.form.submit()">
+      <option value="">Все залы</option>
+      {% for h in halls %}
+        <option value="{{ h.id }}" {% if request.GET.hall == h.id|stringformat:"s" %}selected{% endif %}>{{ h.name }}</option>
+      {% endfor %}
+    </select>
+  </form>
+
+  <a href="{% url 'seat_create' %}" class="add-seat">Добавить новое место</a>
+
+  <ul>
+    {% for seat in seats %}
+      <li>
+        <div class="seat-info">
+          <div>Место: <strong>{{ seat.seat_number }}</strong></div>
+          <div>Зал: <strong>{{ seat.hall.name }}</strong></div>
+          <div>Цена: <strong>{{ seat.price }}</strong> ₽</div>
+          <div class="seat-status {% if seat.is_available %}available{% else %}booked{% endif %}">
+            {% if seat.is_available %}Свободно{% else %}Занято{% endif %}
+          </div>
+        </div>
+        <div class="actions">
+          <a href="{% url 'seat_edit' seat.pk %}">Редактировать</a>
+          <a href="{% url 'seat_delete' seat.pk %}">Удалить</a>
+        </div>
+      </li>
+    {% empty %}
+      <li>Мест не найдено.</li>
+    {% endfor %}
+  </ul>
+
+  <a href="{% url 'hall_list' %}" class="hall-list">Список залов</a>
+
+</body>
+</html>
+
+
+
+
+{% comment %} <h1>All Seats</h1>
+<form method="get">
+    <label for="hall">Filter by hall:</label>
+    <select name="hall" id="hall" onchange="this.form.submit()">
+        <option value="">All Halls</option>
+        {% for h in halls %}
+            <option value="{{ h.id }}" {% if request.GET.hall == h.id|stringformat:"s" %}selected{% endif %}>{{ h.name }}</option>
+        {% endfor %}
+    </select>
+</form>
+
+<a href="{% url 'seat_create' %}">Add New Seat</a>
+
+<ul>
+  {% for seat in seats %}
+    <li>
+      {{ seat.seat_number }} | {{ seat.hall.name }} | {{ seat.price }} | 
+      {% if seat.is_available %}Available{% else %}Booked{% endif %} — 
+      <a href="{% url 'seat_edit' seat.pk %}">Edit</a> |
+      <a href="{% url 'seat_delete' seat.pk %}">Delete</a>
+    </li>
+  {% empty %}
+    <li>No seats found.</li>
+  {% endfor %}
+</ul>
+
+<a href="{% url 'hall_list' %}">Hall list</a> {% endcomment %}
